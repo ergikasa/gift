@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A special question 🌹</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --rose: #e8194b;
+    --rose-dark: #a0102e;
+    --rose-light: #ffb3c6;
+    --leaf: #2d7a4f;
+    --leaf-light: #5ab87a;
+    --petal-1: #ff4d79;
+    --petal-2: #ff1a53;
+    --bg: #fff0f3;
+    --gold: #ffd700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Floating hearts background */
+  .hearts-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .heart-float {
+    position: absolute;
+    font-size: 1.5rem;
+    opacity: 0;
+    animation: floatHeart linear infinite;
+  }
+
+  @keyframes floatHeart {
+    0% { transform: translateY(110vh) scale(0.5) rotate(-20deg); opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(-10vh) scale(1.2) rotate(20deg); opacity: 0; }
+  }
+
+  /* ===== QUESTION SCREEN ===== */
+  #question-screen {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: fadeInDown 1s ease both;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .title-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .emoji-big {
+    font-size: 4rem;
+    display: block;
+    animation: bounce 1.2s ease infinite;
+    margin-bottom: 0.5rem;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--rose-dark);
+    line-height: 1.2;
+    text-shadow: 2px 2px 0 #ffb3c6;
+  }
+
+  h1 span {
+    color: var(--rose);
+    position: relative;
+    display: inline-block;
+    animation: wiggle 2s ease infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #c0406a;
+    margin-top: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover::after { opacity: 1; }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #e8194b, #ff5c87);
+    color: #fff;
+    transform: scale(1.05);
+  }
+  .btn-yes:hover {
+    transform: scale(1.15) rotate(-2deg);
+    box-shadow: 0 10px 35px rgba(232,25,75,0.45);
+  }
+
+  .btn-no {
+    background: linear-gradient(135deg, #f0f0f0, #ddd);
+    color: #888;
+    font-size: 1rem;
+    padding: 0.9rem 2rem;
+    transition: all 0.15s ease;
+  }
+  .btn-no:hover {
+    transform: translate(var(--nx, 0px), var(--ny, 0px)) scale(0.95);
+  }
+
+  /* ===== FLOWER SCREEN ===== */
+  #flower-screen {
+    display: none;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    animation: fadeInUp 0.8s ease both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .flower-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--rose-dark);
+    margin-bottom: 0.3rem;
+    text-shadow: 2px 2px 0 #ffc0d0;
+  }
+
+  .flower-sub {
+    font-size: 1rem;
+    color: #c0406a;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ===== SVG BOUQUET ===== */
+  #bouquet-svg {
+    width: min(320px, 82vw);
+    height: auto;
+    filter: drop-shadow(0 16px 32px rgba(232,25,75,0.25));
+  }
+
+  /* Draw-in animation for each path */
+  .draw {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: draw 1.5s ease forwards;
+  }
+
+  .fill-rose {
+    opacity: 0;
+    animation: fillIn 0.5s ease forwards;
+  }
+
+  @keyframes draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes fillIn {
+    to { opacity: 1; }
+  }
+
+  /* stems */
+  .stem1 { animation-delay: 0.1s; }
+  .stem2 { animation-delay: 0.3s; }
+  .stem3 { animation-delay: 0.5s; }
+  .stem4 { animation-delay: 0.7s; }
+  .stem5 { animation-delay: 0.9s; }
+
+  /* leaves */
+  .leaf1 { animation-delay: 1.1s; }
+  .leaf2 { animation-delay: 1.2s; }
+  .leaf3 { animation-delay: 1.3s; }
+  .leaf4 { animation-delay: 1.4s; }
+  .leaf5 { animation-delay: 1.5s; }
+
+  /* petals grouped per rose */
+  .rose1 .fill-rose { animation-delay: 1.7s; }
+  .rose2 .fill-rose { animation-delay: 2.1s; }
+  .rose3 .fill-rose { animation-delay: 2.5s; }
+  .rose4 .fill-rose { animation-delay: 2.9s; }
+  .rose5 .fill-rose { animation-delay: 3.3s; }
+  .rose1 .draw { animation-delay: 1.7s; }
+  .rose2 .draw { animation-delay: 2.1s; }
+  .rose3 .draw { animation-delay: 2.5s; }
+  .rose4 .draw { animation-delay: 2.9s; }
+  .rose5 .draw { animation-delay: 3.3s; }
+
+  /* ribbon */
+  .ribbon { animation-delay: 3.6s; }
+  .ribbon-fill { animation-delay: 3.8s; }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    top: -20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: confettiFall 3s ease forwards;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .card-back {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(232,25,75,0.18), 0 2px 8px rgba(0,0,0,0.06);
+    max-width: 420px;
+    width: 92vw;
+    border: 2px solid #ffd0de;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating hearts background -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- QUESTION SCREEN -->
+<div id="question-screen">
+  <div class="card-back">
+    <div class="title-wrapper">
+      <span class="emoji-big">🌹</span>
+      <h1>A je ti <span>Ersilda</span>?</h1>
+      <p class="subtitle">përgjigju me kujdes... 🤔</p>
+    </div>
+    <div class="buttons">
+      <button class="btn btn-yes" onclick="yesClicked()">💕 Po, jam!</button>
+      <button class="btn btn-no" id="noBtn" onmousemove="runAway(event)" onclick="runAway()">😅 Jo...</button>
+    </div>
+  </div>
+</div>
+
+<!-- FLOWER SCREEN (hidden initially) -->
+<div id="flower-screen">
+  <div class="card-back">
+    <p class="flower-title">Për ty, Ersilda </p>
+    <p class="flower-sub">meqe ato tjerat u Vyshken ✨</p>
+
+    <!--
+      Realistic rose bouquet — each rose is drawn with proper layered petal paths.
+      A "rose" macro = outer petals (5) + inner petals (5) + sepal ring + bud center.
+      All roses use <use> + <defs> so every petal shape is identical and just
+      transformed/recoloured per layer, keeping the code clean and the look real.
+    -->
+    <svg id="bouquet-svg" viewBox="0 0 340 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- One petal: a teardrop shape pointing upward from origin -->
+        <path id="petal"
+          d="M0,0 C-12,-18 -18,-38 0,-52 C18,-38 12,-18 0,0Z"/>
+        <!-- Sepal (pointy green bit under petals) -->
+        <path id="sepal"
+          d="M0,0 C-4,-10 -2,-20 0,-26 C2,-20 4,-10 0,0Z"/>
+        <!-- Leaf shape -->
+        <path id="leaf-shape"
+          d="M0,0 C-8,-20 -5,-45 0,-55 C5,-45 8,-20 0,0Z"/>
+      </defs>
+
+      <!-- ======================================================
+           STEMS  (drawn first so roses sit on top)
+      ====================================================== -->
+      <!-- stem 1 – center -->
+      <path class="draw stem1" d="M170,400 C170,360 168,320 166,268" fill="none" stroke="#2d6e3e" stroke-width="4" stroke-linecap="round"/>
+      <!-- stem 2 – right of center -->
+      <path class="draw stem2" d="M170,400 C174,358 178,318 185,268" fill="none" stroke="#2d6e3e" stroke-width="4" stroke-linecap="round"/>
+      <!-- stem 3 – left of center -->
+      <path class="draw stem3" d="M170,400 C166,358 160,318 152,272" fill="none" stroke="#2d6e3e" stroke-width="4" stroke-linecap="round"/>
+      <!-- stem 4 – far right -->
+      <path class="draw stem4" d="M170,400 C178,352 194,308 210,258" fill="none" stroke="#2d6e3e" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- stem 5 – far left -->
+      <path class="draw stem5" d="M170,400 C162,354 146,310 128,262" fill="none" stroke="#2d6e3e" stroke-width="3.5" stroke-linecap="round"/>
+
+      <!-- ======================================================
+           LEAVES
+      ====================================================== -->
+      <!-- left leaf on stem3 -->
+      <g class="draw leaf1" transform="translate(156,310) rotate(-40)">
+        <use href="#leaf-shape" fill="#3a9955" stroke="#2d6e3e" stroke-width="1"/>
+      </g>
+      <!-- right leaf on stem2 -->
+      <g class="draw leaf2" transform="translate(182,316) rotate(35)">
+        <use href="#leaf-shape" fill="#4aad65" stroke="#2d6e3e" stroke-width="1"/>
+      </g>
+      <!-- left leaf on stem5 -->
+      <g class="draw leaf3" transform="translate(134,320) rotate(-50)">
+        <use href="#leaf-shape" fill="#3a9955" stroke="#2d6e3e" stroke-width="1"/>
+      </g>
+      <!-- right leaf on stem4 -->
+      <g class="draw leaf4" transform="translate(206,316) rotate(45)">
+        <use href="#leaf-shape" fill="#4aad65" stroke="#2d6e3e" stroke-width="1"/>
+      </g>
+      <!-- small mid leaf -->
+      <g class="draw leaf5" transform="translate(168,355) rotate(-10)">
+        <use href="#leaf-shape" fill="#3a9955" stroke="#2d6e3e" stroke-width="1"/>
+      </g>
+
+      <!-- ======================================================
+           ROSE MACRO — defined as a <g> with cx/cy via transform
+           Each rose: 5 outer petals + 5 inner petals + sepal ring + center bud
+           Outer petals spread at 72° intervals; inner at 72° offset 36°
+      ====================================================== -->
+
+      <!-- helper: draw one rose at given position and scale -->
+      <!-- ROSE 1 – center (tallest, biggest) -->
+      <g class="rose1" transform="translate(166,242)">
+        <!-- sepals -->
+        <g fill="#4aad65" stroke="#2d6e3e" stroke-width="0.5">
+          <use href="#sepal" transform="rotate(0)  translate(0,2)  scale(1.1)"/>
+          <use href="#sepal" transform="rotate(72) translate(0,2)  scale(1.1)"/>
+          <use href="#sepal" transform="rotate(144) translate(0,2) scale(1.1)"/>
+          <use href="#sepal" transform="rotate(216) translate(0,2) scale(1.1)"/>
+          <use href="#sepal" transform="rotate(288) translate(0,2) scale(1.1)"/>
+        </g>
+        <!-- outer petals -->
+        <g class="fill-rose" fill="#e8264e" stroke="#b01030" stroke-width="0.6" opacity="0">
+          <use href="#petal" transform="rotate(0)   scale(1.25)"/>
+          <use href="#petal" transform="rotate(72)  scale(1.25)"/>
+          <use href="#petal" transform="rotate(144) scale(1.25)"/>
+          <use href="#petal" transform="rotate(216) scale(1.25)"/>
+          <use href="#petal" transform="rotate(288) scale(1.25)"/>
+        </g>
+        <!-- inner petals (rotated 36°, slightly smaller) -->
+        <g class="fill-rose" fill="#c8102e" stroke="#900020" stroke-width="0.5" opacity="0">
+          <use href="#petal" transform="rotate(36)  scale(0.9)"/>
+          <use href="#petal" transform="rotate(108) scale(0.9)"/>
+          <use href="#petal" transform="rotate(180) scale(0.9)"/>
+          <use href="#petal" transform="rotate(252) scale(0.9)"/>
+          <use href="#petal" transform="rotate(324) scale(0.9)"/>
+        </g>
+        <!-- bud / center -->
+        <circle class="fill-rose" r="13" fill="#8b001e" opacity="0"/>
+        <circle class="fill-rose" r="7"  fill="#5a0012" opacity="0"/>
+        <!-- outline ring -->
+        <circle class="draw" r="24" fill="none" stroke="#900020" stroke-width="1"/>
+      </g>
+
+      <!-- ROSE 2 – right of center -->
+      <g class="rose2" transform="translate(185,262)">
+        <g fill="#4aad65" stroke="#2d6e3e" stroke-width="0.5">
+          <use href="#sepal" transform="rotate(15)  translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(87)  translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(159) translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(231) translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(303) translate(0,2) scale(1.0)"/>
+        </g>
+        <g class="fill-rose" fill="#e03050" stroke="#a01028" stroke-width="0.6" opacity="0">
+          <use href="#petal" transform="rotate(15)   scale(1.12)"/>
+          <use href="#petal" transform="rotate(87)   scale(1.12)"/>
+          <use href="#petal" transform="rotate(159)  scale(1.12)"/>
+          <use href="#petal" transform="rotate(231)  scale(1.12)"/>
+          <use href="#petal" transform="rotate(303)  scale(1.12)"/>
+        </g>
+        <g class="fill-rose" fill="#b80e28" stroke="#800018" stroke-width="0.5" opacity="0">
+          <use href="#petal" transform="rotate(51)  scale(0.82)"/>
+          <use href="#petal" transform="rotate(123) scale(0.82)"/>
+          <use href="#petal" transform="rotate(195) scale(0.82)"/>
+          <use href="#petal" transform="rotate(267) scale(0.82)"/>
+          <use href="#petal" transform="rotate(339) scale(0.82)"/>
+        </g>
+        <circle class="fill-rose" r="11" fill="#800018" opacity="0"/>
+        <circle class="fill-rose" r="6"  fill="#500010" opacity="0"/>
+        <circle class="draw" r="21" fill="none" stroke="#800018" stroke-width="1"/>
+      </g>
+
+      <!-- ROSE 3 – left of center -->
+      <g class="rose3" transform="translate(152,265)">
+        <g fill="#4aad65" stroke="#2d6e3e" stroke-width="0.5">
+          <use href="#sepal" transform="rotate(-10) translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(62)  translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(134) translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(206) translate(0,2) scale(1.0)"/>
+          <use href="#sepal" transform="rotate(278) translate(0,2) scale(1.0)"/>
+        </g>
+        <g class="fill-rose" fill="#dc2248" stroke="#9e0e24" stroke-width="0.6" opacity="0">
+          <use href="#petal" transform="rotate(-10)  scale(1.12)"/>
+          <use href="#petal" transform="rotate(62)   scale(1.12)"/>
+          <use href="#petal" transform="rotate(134)  scale(1.12)"/>
+          <use href="#petal" transform="rotate(206)  scale(1.12)"/>
+          <use href="#petal" transform="rotate(278)  scale(1.12)"/>
+        </g>
+        <g class="fill-rose" fill="#b40c26" stroke="#7a0016" stroke-width="0.5" opacity="0">
+          <use href="#petal" transform="rotate(26)  scale(0.82)"/>
+          <use href="#petal" transform="rotate(98)  scale(0.82)"/>
+          <use href="#petal" transform="rotate(170) scale(0.82)"/>
+          <use href="#petal" transform="rotate(242) scale(0.82)"/>
+          <use href="#petal" transform="rotate(314) scale(0.82)"/>
+        </g>
+        <circle class="fill-rose" r="11" fill="#7a0016" opacity="0"/>
+        <circle class="fill-rose" r="6"  fill="#4c0010" opacity="0"/>
+        <circle class="draw" r="21" fill="none" stroke="#7a0016" stroke-width="1"/>
+      </g>
+
+      <!-- ROSE 4 – far right -->
+      <g class="rose4" transform="translate(210,252)">
+        <g fill="#4aad65" stroke="#2d6e3e" stroke-width="0.5">
+          <use href="#sepal" transform="rotate(20)  translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(92)  translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(164) translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(236) translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(308) translate(0,2) scale(0.9)"/>
+        </g>
+        <g class="fill-rose" fill="#d81e44" stroke="#9c0c20" stroke-width="0.6" opacity="0">
+          <use href="#petal" transform="rotate(20)  scale(1.0)"/>
+          <use href="#petal" transform="rotate(92)  scale(1.0)"/>
+          <use href="#petal" transform="rotate(164) scale(1.0)"/>
+          <use href="#petal" transform="rotate(236) scale(1.0)"/>
+          <use href="#petal" transform="rotate(308) scale(1.0)"/>
+        </g>
+        <g class="fill-rose" fill="#b00a22" stroke="#780014" stroke-width="0.5" opacity="0">
+          <use href="#petal" transform="rotate(56)  scale(0.74)"/>
+          <use href="#petal" transform="rotate(128) scale(0.74)"/>
+          <use href="#petal" transform="rotate(200) scale(0.74)"/>
+          <use href="#petal" transform="rotate(272) scale(0.74)"/>
+          <use href="#petal" transform="rotate(344) scale(0.74)"/>
+        </g>
+        <circle class="fill-rose" r="10" fill="#780014" opacity="0"/>
+        <circle class="fill-rose" r="5.5" fill="#46000c" opacity="0"/>
+        <circle class="draw" r="19" fill="none" stroke="#780014" stroke-width="1"/>
+      </g>
+
+      <!-- ROSE 5 – far left -->
+      <g class="rose5" transform="translate(128,256)">
+        <g fill="#4aad65" stroke="#2d6e3e" stroke-width="0.5">
+          <use href="#sepal" transform="rotate(-20) translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(52)  translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(124) translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(196) translate(0,2) scale(0.9)"/>
+          <use href="#sepal" transform="rotate(268) translate(0,2) scale(0.9)"/>
+        </g>
+        <g class="fill-rose" fill="#d81e44" stroke="#9c0c20" stroke-width="0.6" opacity="0">
+          <use href="#petal" transform="rotate(-20) scale(1.0)"/>
+          <use href="#petal" transform="rotate(52)  scale(1.0)"/>
+          <use href="#petal" transform="rotate(124) scale(1.0)"/>
+          <use href="#petal" transform="rotate(196) scale(1.0)"/>
+          <use href="#petal" transform="rotate(268) scale(1.0)"/>
+        </g>
+        <g class="fill-rose" fill="#b00a22" stroke="#780014" stroke-width="0.5" opacity="0">
+          <use href="#petal" transform="rotate(16)  scale(0.74)"/>
+          <use href="#petal" transform="rotate(88)  scale(0.74)"/>
+          <use href="#petal" transform="rotate(160) scale(0.74)"/>
+          <use href="#petal" transform="rotate(232) scale(0.74)"/>
+          <use href="#petal" transform="rotate(304) scale(0.74)"/>
+        </g>
+        <circle class="fill-rose" r="10" fill="#780014" opacity="0"/>
+        <circle class="fill-rose" r="5.5" fill="#46000c" opacity="0"/>
+        <circle class="draw" r="19" fill="none" stroke="#780014" stroke-width="1"/>
+      </g>
+
+      <!-- ======================================================
+           RIBBON & BOW at base
+      ====================================================== -->
+      <!-- wrap band -->
+      <path class="draw ribbon"
+        d="M118,382 Q170,368 222,382 Q218,396 170,398 Q122,396 118,382Z"
+        fill="none" stroke="#c8194b" stroke-width="2"/>
+      <path class="fill-rose ribbon-fill"
+        d="M118,382 Q170,368 222,382 Q218,396 170,398 Q122,396 118,382Z"
+        fill="#ffb3c6" opacity="0.8"/>
+      <!-- bow left -->
+      <path class="draw ribbon"
+        d="M170,376 Q150,358 138,363 Q145,374 170,376Z"
+        fill="none" stroke="#c8194b" stroke-width="1.5"/>
+      <path class="fill-rose ribbon-fill"
+        d="M170,376 Q150,358 138,363 Q145,374 170,376Z"
+        fill="#ff85aa" opacity="0.85"/>
+      <!-- bow right -->
+      <path class="draw ribbon"
+        d="M170,376 Q190,358 202,363 Q195,374 170,376Z"
+        fill="none" stroke="#c8194b" stroke-width="1.5"/>
+      <path class="fill-rose ribbon-fill"
+        d="M170,376 Q190,358 202,363 Q195,374 170,376Z"
+        fill="#ff85aa" opacity="0.85"/>
+      <!-- knot -->
+      <ellipse class="fill-rose ribbon-fill" cx="170" cy="375" rx="6" ry="5" fill="#e8194b" opacity="0.9"/>
+
+      <!-- ======================================================
+           SPARKLES
+      ====================================================== -->
+      <text class="fill-rose" x="226" y="222" font-size="15" fill="#ffd700" style="animation-delay:3.6s">✨</text>
+      <text class="fill-rose" x="96"  y="232" font-size="13" fill="#ffd700" style="animation-delay:3.8s">✨</text>
+      <text class="fill-rose" x="162" y="188" font-size="16" fill="#ffd700" style="animation-delay:4.0s">✨</text>
+
+    </svg>
+  </div>
+</div>
+
+<script>
+  // Floating hearts
+  const hb = document.getElementById('heartsBg');
+  const emojis = ['❤️','🌹','💕','💗','✨','🌸','💝'];
+  for(let i=0;i<18;i++){
+    const h = document.createElement('div');
+    h.className='heart-float';
+    h.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    h.style.left = Math.random()*100+'vw';
+    h.style.animationDuration = (6+Math.random()*8)+'s';
+    h.style.animationDelay = (Math.random()*8)+'s';
+    h.style.fontSize = (1+Math.random()*1.5)+'rem';
+    hb.appendChild(h);
+  }
+
+  // No button runs away
+  function runAway(e) {
+    const btn = document.getElementById('noBtn');
+    const maxX = window.innerWidth - btn.offsetWidth - 20;
+    const maxY = window.innerHeight - btn.offsetHeight - 20;
+    const nx = Math.random()*maxX - btn.getBoundingClientRect().left + 20;
+    const ny = Math.random()*maxY - btn.getBoundingClientRect().top + 20;
+    btn.style.position = 'fixed';
+    btn.style.left = Math.min(Math.max(10, btn.getBoundingClientRect().left + (Math.random()-0.5)*180), maxX)+'px';
+    btn.style.top = Math.min(Math.max(10, btn.getBoundingClientRect().top + (Math.random()-0.5)*180), maxY)+'px';
+    btn.style.transition = 'left 0.2s, top 0.2s';
+    btn.textContent = ['😂 Iki!','🏃 Nuk mund!','😅 Mundhesh!','🙈 Hahaha!'][Math.floor(Math.random()*4)];
+  }
+
+  function yesClicked() {
+    document.getElementById('question-screen').style.display='none';
+    document.getElementById('flower-screen').style.display='block';
+    spawnConfetti();
+  }
+
+  function spawnConfetti(){
+    const colors=['#e8194b','#ffd700','#ff9ec6','#5ab87a','#fff','#ff6699'];
+    for(let i=0;i<80;i++){
+      const c=document.createElement('div');
+      c.className='confetti-piece';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDelay=(Math.random()*2)+'s';
+      c.style.animationDuration=(2+Math.random()*2)+'s';
+      c.style.width=(8+Math.random()*12)+'px';
+      c.style.height=(8+Math.random()*12)+'px';
+      c.style.borderRadius=Math.random()>0.5?'50%':'2px';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),4500);
+    }
+  }
+</script>
+</body>
+</html>
